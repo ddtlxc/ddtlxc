@@ -1,10 +1,21 @@
-name: Issue Triage
+name: OpenCode
 on:
-  issues:
-    types: [opened]
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: Prompt for OpenCode
+        required: true
+        default: Analyze the repository and suggest improvements
+  issue_comment:
+    types: [created]
 
 jobs:
-  triage:
+  opencode:
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issue_comment' &&
+        (contains(github.event.comment.body, '/oc') ||
+         contains(github.event.comment.body, '/opencode')))
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -21,8 +32,4 @@ jobs:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
         with:
           model: opencode/deepseek-v4-flash-free
-          prompt: |
-            Review this issue. If there's a clear fix or relevant docs:
-            - Provide documentation links
-            - Add error handling guidance for code examples
-            Otherwise, do not comment.
+          prompt: ${{ inputs.prompt }}
