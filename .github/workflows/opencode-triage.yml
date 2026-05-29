@@ -17,6 +17,8 @@ jobs:
         (contains(github.event.comment.body, '/oc') ||
          contains(github.event.comment.body, '/opencode')))
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     permissions:
       id-token: write
       contents: write
@@ -30,7 +32,6 @@ jobs:
       - uses: anomalyco/opencode/github@latest
         env:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
         with:
           model: opencode/deepseek-v4-flash-free
           prompt: ${{ inputs.prompt }}
